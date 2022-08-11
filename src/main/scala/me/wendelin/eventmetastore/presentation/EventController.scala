@@ -1,16 +1,24 @@
 package me.wendelin.eventmetastore.presentation
 
-import me.wendelin.eventmetastore.core.model.Event
-import org.springframework.web.bind.annotation.{GetMapping, RequestParam, RestController}
-
-import java.time.LocalDateTime
+import me.wendelin.eventmetastore.core.{Event, EventService}
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.{DeleteMapping, GetMapping, PathVariable, PostMapping, RequestBody, RequestMapping, ResponseStatus, RestController}
 
 @RestController
-class EventController {
+@RequestMapping(path = Array("/events"))
+class EventController(eventService: EventService) {
 
-  @GetMapping(value = Array("/events"))
-  def getEvents: Event = {
-    Event(LocalDateTime.now(), "Europapark", "Gästeunterhaltung", "Solo")
+  @GetMapping
+  def query: List[Event] = eventService.queryAll()
+
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  def post(@RequestBody event: Event): Event = {
+    eventService.save(event)
+    event
   }
+
+  @DeleteMapping(value = Array("/{id}"))
+  def delete(@PathVariable id: Int): Unit = eventService.delete(id)
 
 }
