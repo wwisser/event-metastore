@@ -3,9 +3,11 @@ package me.wendelin.eventmetastore.infra.service
 import me.wendelin.eventmetastore.core.model.Location
 import me.wendelin.eventmetastore.core.service.LocationService
 import me.wendelin.eventmetastore.infra.repository.LocationRepository
+import org.springframework.stereotype.Service
 
 import scala.collection.JavaConverters._
 
+@Service
 class LocationServiceImpl(val repository: LocationRepository) extends LocationService {
 
   override def save(location: Location): Unit = repository.save(location)
