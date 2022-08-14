@@ -1,4 +1,4 @@
-package me.wendelin.eventmetastore.core
+package me.wendelin.eventmetastore.core.model
 
 import java.time.LocalDateTime
 import javax.persistence.{Entity, GeneratedValue, Id, Table}
@@ -9,8 +9,8 @@ import scala.beans.BeanProperty
 @Table(name = "events")
 class Event(
              @BeanProperty var dateTime: LocalDateTime,
-             @BeanProperty var location: String,
-             @BeanProperty var kind: String,
+             @BeanProperty var locationId: Int,
+             @BeanProperty var kindId: Int,
              @BeanProperty var description: String
            ) {
   @Id

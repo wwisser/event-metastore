@@ -1,6 +1,7 @@
 package me.wendelin.eventmetastore.presentation
 
-import me.wendelin.eventmetastore.core.{Event, EventService}
+import me.wendelin.eventmetastore.core.model.Event
+import me.wendelin.eventmetastore.core.service.EventService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.{DeleteMapping, GetMapping, PathVariable, PostMapping, RequestBody, RequestMapping, ResponseStatus, RestController}
 

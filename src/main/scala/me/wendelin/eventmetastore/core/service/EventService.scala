@@ -1,4 +1,6 @@
-package me.wendelin.eventmetastore.core
+package me.wendelin.eventmetastore.core.service
+
+import me.wendelin.eventmetastore.core.model.{Event, EventQuery}
 
 trait EventService {
 
