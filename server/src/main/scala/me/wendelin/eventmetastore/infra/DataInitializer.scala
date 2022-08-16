@@ -18,7 +18,7 @@ class DataInitializer(
   def initialize(): Unit = {
     kindRepository.save(new Kind("Entertainment"))
     locationRepository.save(new Location("Munich"))
-    eventRepository.save(new Event(LocalDateTime.now(), 1, 1, "Duo"))
+    eventRepository.save(new Event(LocalDateTime.now(), 2, 1, "Duo"))
   }
 
 }
