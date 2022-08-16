@@ -12,6 +12,10 @@ import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.web.servlet.config.annotation.{CorsRegistry, InterceptorRegistry, WebMvcConfigurer}
 import org.springframework.beans.factory.annotation.Value
 
+object EventMetastoreApplication extends App {
+  SpringApplication.run(classOf[EventMetastoreApplication])
+}
+
 @SpringBootApplication
 @EnableScheduling
 @EnableJpaRepositories
@@ -21,7 +25,8 @@ class EventMetastoreApplication {
   def corsConfigurer(): WebMvcConfigurer = {
     new WebMvcConfigurer() {
       override def addCorsMappings(registry: CorsRegistry): Unit = {
-        registry.addMapping("/**")
+        registry
+          .addMapping("/**")
           .allowedOrigins("*")
           .allowedHeaders("*")
           .allowedMethods("*")
@@ -32,10 +37,13 @@ class EventMetastoreApplication {
   @Bean
   def interceptorConfigurer(): WebMvcConfigurer = {
     new WebMvcConfigurer() {
-      @Value("${security.token}") private val token: String = null
+      @Value("${security.token}")
+      private val token: String = null
 
       override def addInterceptors(registry: InterceptorRegistry): Unit = {
-        registry.addInterceptor(new StaticTokenInterceptor(token)).addPathPatterns("/**")
+        registry
+          .addInterceptor(new StaticTokenInterceptor(token))
+          .addPathPatterns("/**")
       }
     }
   }
@@ -48,8 +56,4 @@ class EventMetastoreApplication {
     mapper
   }
 
-}
-
-object EventMetastoreApplication extends App {
-  SpringApplication.run(classOf[EventMetastoreApplication])
 }
