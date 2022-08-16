@@ -5,6 +5,7 @@ import me.wendelin.eventmetastore.core.service.LocationService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.{DeleteMapping, GetMapping, PathVariable, PostMapping, RequestBody, RequestMapping, ResponseStatus, RestController}
 
+import javax.validation.Valid
 
 @RestController
 @RequestMapping(path = Array("/locations"))
@@ -15,7 +16,7 @@ class LocationController(locationService: LocationService) {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  def post(@RequestBody location: Location): Location = {
+  def post(@Valid @RequestBody location: Location): Location = {
     locationService.save(location)
     location
   }

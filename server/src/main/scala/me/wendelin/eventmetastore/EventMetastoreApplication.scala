@@ -1,12 +1,15 @@
 package me.wendelin.eventmetastore
 
+import me.wendelin.eventmetastore.presentation.security.StaticTokenInterceptor
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.{Bean}
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.scheduling.annotation.EnableScheduling
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
-import org.springframework.web.servlet.config.annotation.CorsRegistry
+import org.springframework.web.servlet.config.annotation.{CorsRegistry, InterceptorRegistry, WebMvcConfigurer}
 
 @SpringBootApplication
 @EnableScheduling
@@ -23,6 +26,23 @@ class EventMetastoreApplication {
           .allowedMethods("*")
       }
     }
+  }
+
+  @Bean
+  def interceptorConfigurer(): WebMvcConfigurer = {
+    new WebMvcConfigurer() {
+      override def addInterceptors(registry: InterceptorRegistry): Unit = {
+        registry.addInterceptor(new StaticTokenInterceptor).addPathPatterns("/**")
+      }
+    }
+  }
+
+  @Bean
+  def objectMapper: ObjectMapper = {
+    val mapper = new ObjectMapper
+    mapper.registerModule(DefaultScalaModule)
+    mapper.registerModule(new JavaTimeModule)
+    mapper
   }
 
 }
