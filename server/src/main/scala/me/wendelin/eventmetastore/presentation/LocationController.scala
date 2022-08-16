@@ -16,7 +16,7 @@ class LocationController(locationService: LocationService) {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  def post(@Valid @RequestBody location: Location): Location = {
+  def post(@RequestBody location: Location): Location = {
     locationService.save(location)
     location
   }
