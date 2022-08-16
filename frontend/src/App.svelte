@@ -1,52 +1,81 @@
 <script>
     export let apiHost;
 
-    let data = {
-        location: "",
-        kind: "",
-        description: ""
-    };
+    let requestingResource = false;
 
-    let addEvent = async () => {
-        // const eventToCreate = {
-        //     location: data.location,
-        //     kind: data.kind,
-        //     description: data.description
-        // };
+    let kinds = [];
+    let locations = [];
+    let events = [];
+    let data = {};
 
-        const res = await fetch(`${apiHost}/kinds`, {
-            method: 'POST',
-            body: JSON.stringify({
-                name: data.kind
-            }),
-            headers: new Headers({'content-type': 'application/json'})
+    fetch(`${apiHost}/kinds`)
+        .then(res => res.json())
+        .then(fetchedKinds => kinds = fetchedKinds)
+        .then(() => {
+            fetch(`${apiHost}/locations`)
+                .then(res => res.json())
+                .then(fetchedLocations => locations = fetchedLocations)
+                .then(() => data = createDefaultData())
+                .then(() => {
+                    fetch(`${apiHost}/events`)
+                        .then(res => res.json())
+                        .then(fetchedEvents => events = fetchedEvents);
+                })
         })
 
-        console.log(res.json());
-
-        data = {
-            location: "",
-            kind: "",
-            description: ""
+    async function addEvent() {
+        const config = {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: new Headers({'content-type': 'application/json'})
         };
-    };
+
+        requestingResource = true;
+        fetch(`${apiHost}/events`, config)
+            .then(res => res.json)
+            .then(createdEvent => {
+                events.push(createdEvent);
+                requestingResource = false;
+                data = createDefaultData();
+            });
+    }
+
+    function createDefaultData() {
+        return {
+            dateTime: new Date().toISOString().slice(0, 16),
+            kindId: kinds[0].id,
+            locationId: locations[0].id,
+            description: 'Duo'
+        }
+    }
 </script>
 
+<nav class="navbar fixed-top navbar-light bg-primary">
+    <a class="navbar-brand text-white" href="#">Event Metastore</a>
+</nav>
 <section>
     <div class="container">
         <div class="row mt-5 ">
             <div class="col-md-6">
-                <div class="card p-2 shadow">
+                <div class="card mt-5 p-2 shadow">
                     <div class="card-body">
                         <h5 class="card-title mb-4">Create Event</h5>
                         <form>
+                            <div class="form-group">
+                                <label for="date">Date</label>
+                                <input class="form-control" id="date" bind:value={data.dateTime}
+                                       type="datetime-local">
+                            </div>
                             <div class="form-group">
                                 <label for="locations">Location</label>
                                 <select
                                         class="form-control"
                                         id="locations"
-                                        bind:value={data.location}>
-                                    <option value="Munich">Munich</option>
+                                        bind:value={data.locationId}
+                                >
+                                    {#each locations as location}
+                                        <option value={location.id}>{location.name}</option>
+                                    {/each}
                                 </select>
                             </div>
                             <div class="form-group">
@@ -54,8 +83,10 @@
                                 <select
                                         class="form-control"
                                         id="kinds"
-                                        bind:value={data.kind}>
-                                    <option value="Entertainment">Entertainment</option>
+                                        bind:value={data.kindId}>
+                                    {#each kinds as kind}
+                                        <option value={kind.id}>{kind.name}</option>
+                                    {/each}
                                 </select>
                             </div>
                             <div class="form-group">
@@ -71,6 +102,7 @@
                             </div>
                             <button
                                     type="submit"
+                                    disabled={requestingResource}
                                     on:click|preventDefault={addEvent}
                                     class="btn btn-primary">
                                 Create Event
