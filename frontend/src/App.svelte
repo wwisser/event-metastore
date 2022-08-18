@@ -109,7 +109,7 @@
 
 <nav class="navbar fixed-top navbar-light bg-primary">
     <a class="navbar-brand text-white" href="#">
-        <img style="filter: opacity(0.5) drop-shadow(0 0 0 blue)" src="/icon.png" height="40" alt="logo">
+        <img style="filter: opacity(0.5) drop-shadow(0 0 0 blue)" src="icon.png" height="40" alt="logo">
         <span>Event Metastore</span>
     </a>
 </nav>
