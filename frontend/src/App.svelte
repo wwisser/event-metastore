@@ -207,7 +207,7 @@
                 </div>
 
             </div>
-            <div class="mt-5 col-md-4">
+            <div class="mt-5 col-md-5">
                 {#each events as event}
                     <div class="card mb-3">
                         <div class="card-header">
