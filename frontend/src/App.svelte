@@ -1,5 +1,7 @@
 <script>
-    export let apiHost;
+    export let API_HOST;
+    export let API_TOKEN;
+    const ADMIN_HEADER = new Headers({'content-type': 'application/json', 'Authorization': API_TOKEN});
 
     let requestingResource = false;
 
@@ -14,16 +16,16 @@
     fetchInitialData();
 
     function fetchInitialData() {
-        fetch(`${apiHost}/kinds`)
+        fetch(`${API_HOST}/kinds`)
             .then(res => res.json())
             .then(fetchedKinds => kinds = fetchedKinds)
             .then(() => {
-                fetch(`${apiHost}/locations`)
+                fetch(`${API_HOST}/locations`)
                     .then(res => res.json())
                     .then(fetchedLocations => locations = fetchedLocations)
                     .then(() => data = createDefaultData())
                     .then(() => {
-                        fetch(`${apiHost}/events`)
+                        fetch(`${API_HOST}/events`)
                             .then(res => res.json())
                             .then(fetchedEvents => events = fetchedEvents);
                     })
@@ -34,11 +36,11 @@
         const config = {
             method: 'POST',
             body: JSON.stringify(data),
-            headers: new Headers({'content-type': 'application/json'})
+            headers: ADMIN_HEADER
         };
 
         requestingResource = true;
-        fetch(`${apiHost}/events`, config)
+        fetch(`${API_HOST}/events`, config)
             .then(res => res.json())
             .then(createdEvent => {
                 events = events.concat(createdEvent);
@@ -52,11 +54,11 @@
         const config = {
             method: 'POST',
             body: JSON.stringify({name: locationName}),
-            headers: new Headers({'content-type': 'application/json'})
+            headers: ADMIN_HEADER
         };
 
         requestingResource = true;
-        fetch(`${apiHost}/locations`, config)
+        fetch(`${API_HOST}/locations`, config)
             .then(res => res.json())
             .then(createdLocation => {
                 locations = locations.concat(createdLocation);
@@ -67,12 +69,12 @@
     async function postKind() {
         const config = {
             method: 'POST',
-            body: JSON.stringify({name: locationName}),
-            headers: new Headers({'content-type': 'application/json'})
+            body: JSON.stringify({name: kindName}),
+            headers: ADMIN_HEADER
         };
 
         requestingResource = true;
-        fetch(`${apiHost}/kinds`, config)
+        fetch(`${API_HOST}/kinds`, config)
             .then(res => res.json())
             .then(createdKind => {
                 kinds = kinds.concat(createdKind);
@@ -81,7 +83,7 @@
     }
 
     async function deleteEvent(eventToDelete) {
-        fetch(`${apiHost}/events/${eventToDelete.id}`, {method: 'DELETE'})
+        fetch(`${API_HOST}/events/${eventToDelete.id}`, {method: 'DELETE', headers: ADMIN_HEADER})
             .then(() => {
                 events = events.filter(event => event !== eventToDelete)
             });
