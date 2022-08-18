@@ -3,6 +3,7 @@ Simple store for metadata of events, exposed by a Spring API and manageable with
 
 ## API
 Swagger documentation is reachable via `http://localhost:8081/swagger-ui/index.html`:
+
 ![Swagger UI](demo/swagger.png)
 
 ### Deploy
