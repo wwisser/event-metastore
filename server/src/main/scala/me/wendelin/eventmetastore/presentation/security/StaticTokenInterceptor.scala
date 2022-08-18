@@ -10,7 +10,6 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 class StaticTokenInterceptor(val token: String) extends HandlerInterceptor {
 
   override def preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean = {
-    println(token)
     if (Set(HttpMethod.GET.name(), HttpMethod.OPTIONS.name()).contains(request.getMethod)) {
       return true
     }

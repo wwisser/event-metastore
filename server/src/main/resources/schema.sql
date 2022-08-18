@@ -1,0 +1,19 @@
+CREATE TABLE IF NOT EXISTS locations(
+    id   SERIAL NOT NULL PRIMARY KEY,
+    name VARCHAR (255) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS kinds(
+    id   SERIAL NOT NULL PRIMARY KEY,
+    name VARCHAR (255) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS events(
+    id          SERIAL NOT NULL PRIMARY KEY,
+    date_time   TIMESTAMP NOT NULL,
+    description VARCHAR (255) NOT NULL,
+    kind_id     INTEGER NOT NULL,
+    location_id INTEGER NOT NULL,
+    CONSTRAINT fk_kind FOREIGN KEY(kind_id) REFERENCES kinds(id),
+    CONSTRAINT fk_location FOREIGN KEY(location_id) REFERENCES locations(id)
+);
