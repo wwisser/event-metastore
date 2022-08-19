@@ -15,7 +15,6 @@ class EventController(eventService: EventService) {
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   def post(@RequestBody event: Event): Event = {
-    Thread.sleep(1000) // @TODO remove
     eventService.save(event)
     event
   }
