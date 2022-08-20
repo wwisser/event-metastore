@@ -13,7 +13,7 @@ class EventServiceImpl(val repository: EventRepository) extends EventService {
 
   override def delete(id: Int): Unit = repository.deleteById(id)
 
-  override def queryAll(): List[Event] = repository.findAll().asScala.toList
+  override def queryAll(): List[Event] = repository.findByOrderByDateTimeAsc().asScala.toList
 
   override def query(query: EventQuery): List[Event] = ???
 }
