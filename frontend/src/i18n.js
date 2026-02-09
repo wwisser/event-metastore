@@ -1,0 +1,42 @@
+export const t = {
+    en: {
+        title: 'Event Metastore',
+        admin: 'Admin',
+        createEvent: 'Create Event',
+        dateTime: 'Date & Time',
+        location: 'Location',
+        kind: 'Kind',
+        size: 'Size',
+        createBtn: 'Create Event',
+        addLocation: 'Add Location',
+        addKind: 'Add Kind',
+        namePlaceholder: 'Name...',
+        addBtn: 'Add',
+        events: 'Events',
+        id: 'ID',
+        date: 'Date',
+        delete: 'Delete',
+        noEvents: 'No events yet',
+        eventsLabel: 'events'
+    },
+    de: {
+        title: 'Event Metastore',
+        admin: 'Admin',
+        createEvent: 'Event Erstellen',
+        dateTime: 'Datum & Uhrzeit',
+        location: 'Ort',
+        kind: 'Art',
+        size: 'Größe',
+        createBtn: 'Event Erstellen',
+        addLocation: 'Ort Hinzufügen',
+        addKind: 'Art Hinzufügen',
+        namePlaceholder: 'Name...',
+        addBtn: 'Hinzufügen',
+        events: 'Events',
+        id: 'ID',
+        date: 'Datum',
+        delete: 'Löschen',
+        noEvents: 'Noch keine Events',
+        eventsLabel: 'Events'
+    }
+};

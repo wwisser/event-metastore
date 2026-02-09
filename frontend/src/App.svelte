@@ -1,8 +1,13 @@
 <script>
+    import { t } from './i18n.js';
+    import { tweened } from 'svelte/motion';
+    import { cubicOut } from 'svelte/easing';
+
     export let API_HOST;
     export let API_TOKEN;
     const HEADERS = new Headers({'content-type': 'application/json', 'Authorization': API_TOKEN});
 
+    let lang = 'de';
     let kinds = [], locations = [], events = [];
     let data = {};
     let newLocation = '', newKind = '';
@@ -53,10 +58,22 @@
     function getName(arr, id) { return arr.find(x => x.id === id)?.name || '—'; }
     function formatDate(dt) { return new Date(dt).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
 
+    const currentYear = new Date().getFullYear();
+    const displayYears = [currentYear, currentYear - 1, currentYear - 2];
+    const animatedCounts = tweened([0, 0, 0], { duration: 1000, easing: cubicOut });
+
+    $: {
+        const newCounts = displayYears.map(year => 
+            events.filter(e => new Date(e.dateTime).getFullYear() === year).length
+        );
+        animatedCounts.set(newCounts);
+    }
+
     $: sorted = [...events].sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
     $: totalPages = Math.ceil(sorted.length / perPage);
     $: paged = sorted.slice((currentPage - 1) * perPage, currentPage * perPage);
     $: if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+    $: tr = t[lang];
 </script>
 
 <style>
@@ -66,8 +83,8 @@
 
     .app { display: grid; grid-template-columns: 300px 1fr; min-height: 100vh; }
     .sidebar { background: #09090b; border-right: 1px solid #27272a; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
-    .main { padding: 24px; overflow-x: auto; background: #09090b; }
-
+    .main { padding: 24px; overflow-x: auto; background: #09090b; display: flex; flex-direction: column; height: 100vh; }
+    
     h1 { font-size: 20px; font-weight: 700; color: #fafafa; margin-bottom: 4px; }
     h2 { font-size: 13px; font-weight: 600; color: #71717a; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
 
@@ -75,6 +92,7 @@
     label { display: block; font-size: 13px; color: #a1a1aa; margin-bottom: 6px; }
     input, select { width: 100%; padding: 10px 12px; background: #18181b; border: 1px solid #27272a; border-radius: 6px; color: #fafafa; font-size: 14px; }
     input:focus, select:focus { outline: none; border-color: #3b82f6; }
+    input[type="datetime-local"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
 
     .btn { padding: 10px 16px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
     .btn-primary { background: #3b82f6; color: #fff; }
@@ -105,74 +123,92 @@
 
     .empty { text-align: center; padding: 48px; color: #52525b; }
     .badge { display: inline-block; padding: 4px 10px; background: #18181b; border: 1px solid #27272a; border-radius: 4px; font-size: 12px; color: #71717a; }
+
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .lang-switcher { display: flex; gap: 4px; background: #18181b; border: 1px solid #27272a; border-radius: 6px; padding: 2px; }
+    .lang-btn { padding: 4px 10px; background: transparent; border: none; color: #71717a; cursor: pointer; border-radius: 4px; font-size: 12px; font-weight: 500; }
+    .lang-btn.active { background: #3b82f6; color: #fff; }
+
+    .stats-wrapper { display: flex; flex: 1; align-items: center; justify-content: center; padding: 20px 0; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 140px); gap: 20px; }
+    .stat-card { background: linear-gradient(135deg, #18181b 0%, #27272a 100%); border: 1px solid #27272a; border-radius: 8px; padding: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 110px; }
+    .stat-year { font-size: 12px; color: #71717a; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-count { font-size: 32px; font-weight: 700; color: #3b82f6; line-height: 1.1; }
+    .stat-label { font-size: 11px; color: #a1a1aa; margin-top: 4px; }
 </style>
 
 <div class="app">
     <aside class="sidebar">
-        <div>
-            <h1>Event Metastore</h1>
-            <span class="badge">Admin</span>
+        <div class="header-row">
+            <div>
+                <h1>{tr.title}</h1>
+                <span class="badge">{tr.admin}</span>
+            </div>
+            <div class="lang-switcher">
+                <button class="lang-btn" class:active={lang === 'de'} on:click={() => lang = 'de'}>DE</button>
+                <button class="lang-btn" class:active={lang === 'en'} on:click={() => lang = 'en'}>EN</button>
+            </div>
         </div>
 
         <div>
-            <h2>Create Event</h2>
+            <h2>{tr.createEvent}</h2>
             <form on:submit|preventDefault={createEvent}>
                 <div class="form-group">
-                    <label>Date & Time</label>
+                    <label>{tr.dateTime}</label>
                     <input type="datetime-local" bind:value={data.dateTime}>
                 </div>
                 <div class="form-group">
-                    <label>Location</label>
+                    <label>{tr.location}</label>
                     <select bind:value={data.locationId}>
                         {#each locations as loc}<option value={loc.id}>{loc.name}</option>{/each}
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Kind</label>
+                    <label>{tr.kind}</label>
                     <select bind:value={data.kindId}>
                         {#each kinds as k}<option value={k.id}>{k.name}</option>{/each}
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Size</label>
+                    <label>{tr.size}</label>
                     <select bind:value={data.description}>
                         <option>Solo</option><option>Duo</option><option>Trio</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width:100%">Create Event</button>
+                <button type="submit" class="btn btn-primary" style="width:100%">{tr.createBtn}</button>
             </form>
         </div>
 
         <div class="divider"></div>
 
         <div>
-            <h2>Add Location</h2>
+            <h2>{tr.addLocation}</h2>
             <div class="inline-form">
-                <input type="text" bind:value={newLocation} placeholder="Name...">
-                <button class="btn btn-ghost btn-sm" on:click={addLocation}>Add</button>
+                <input type="text" bind:value={newLocation} placeholder={tr.namePlaceholder}>
+                <button class="btn btn-ghost btn-sm" on:click={addLocation}>{tr.addBtn}</button>
             </div>
         </div>
 
         <div>
-            <h2>Add Kind</h2>
+            <h2>{tr.addKind}</h2>
             <div class="inline-form">
-                <input type="text" bind:value={newKind} placeholder="Name...">
-                <button class="btn btn-ghost btn-sm" on:click={addKind}>Add</button>
+                <input type="text" bind:value={newKind} placeholder={tr.namePlaceholder}>
+                <button class="btn btn-ghost btn-sm" on:click={addKind}>{tr.addBtn}</button>
             </div>
         </div>
     </aside>
 
     <main class="main">
-        <h2>Events ({sorted.length})</h2>
+        <h2>{tr.events} ({sorted.length})</h2>
         {#if paged.length}
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Date</th>
-                        <th>Location</th>
-                        <th>Kind</th>
-                        <th>Size</th>
+                        <th>{tr.id}</th>
+                        <th>{tr.date}</th>
+                        <th>{tr.location}</th>
+                        <th>{tr.kind}</th>
+                        <th>{tr.size}</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -184,7 +220,7 @@
                             <td>{getName(locations, event.locationId)}</td>
                             <td>{getName(kinds, event.kindId)}</td>
                             <td>{event.description}</td>
-                            <td><button class="btn btn-danger btn-sm" on:click={() => deleteEvent(event.id)}>Delete</button></td>
+                            <td><button class="btn btn-danger btn-sm" on:click={() => deleteEvent(event.id)}>{tr.delete}</button></td>
                         </tr>
                     {/each}
                 </tbody>
@@ -199,8 +235,20 @@
                     <button class="page-btn" on:click={() => currentPage++} disabled={currentPage === totalPages}>→</button>
                 </div>
             {/if}
+
+            <div class="stats-wrapper">
+                <div class="stats-grid">
+                    {#each displayYears as year, i}
+                        <div class="stat-card">
+                            <div class="stat-year">{year}</div>
+                            <div class="stat-count">{Math.round($animatedCounts[i])}</div>
+                            <div class="stat-label">{tr.eventsLabel}</div>
+                        </div>
+                    {/each}
+                </div>
+            </div>
         {:else}
-            <div class="empty">No events yet</div>
+            <div class="empty">{tr.noEvents}</div>
         {/if}
     </main>
 </div>
