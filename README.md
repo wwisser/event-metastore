@@ -13,12 +13,10 @@ Simple store for metadata of events, exposed by a Spring API and manageable with
 
 ## Backend
 
-Swagger documentation is reachable via `http://localhost:8081/swagger-ui/index.html`
-
-![Swagger UI](demo/swagger.png)
-
 1. Navigate into the `server` directory
 2. Set up a PostgreSQL database
 3. Configure `application.properties` with the corresponding credentials
 4. Run the maven build: `mvn clean package`
 5. Use the `Dockerfile` to build and run your image
+
+Swagger documentation is reachable via `http://localhost:8081/swagger-ui/index.html`
